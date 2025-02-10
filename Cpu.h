@@ -31,18 +31,44 @@ namespace CPU{
         SLA,
         SRA,
         SRL,
-        SWAP
+        SWAP,
+        BIT,
+        SET,
+        RES
+    };
+
+    enum REGISTER_8_BIT {
+        B = 0,
+        C = 1,
+        D = 2,
+        E = 3,
+        H = 4,
+        L = 5,
+        A = 7,
+        F = 8,
+    };
+
+    union Registers {
+        uint8_t reg_8[9];
+        struct {
+            uint16_t BC : 16;
+            uint16_t DE : 16;
+            uint16_t HL : 16;
+            uint8_t : 8;
+            uint16_t AF  : 16;
+        };
+        struct{
+            uint64_t : 64;
+            bool cy : 1;
+            bool h : 1;
+            bool n : 1;
+            bool z : 1;
+            uint8_t : 4;
+        };
     };
 
     class Cpu {
-        uint8_t A;
-        uint8_t F;
-        uint8_t B;
-        uint8_t C;
-        uint8_t D;
-        uint8_t E;
-        uint8_t H;
-        uint8_t L;
+        Registers registers;
         uint16_t SP;
         uint16_t PC;
         BUS::Bus *bus;
