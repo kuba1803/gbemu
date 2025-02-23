@@ -46,16 +46,22 @@ namespace CPU{
         L = 5,
         A = 7,
         F = 8,
+        PC_HIGH = 9,
+        PC_LOW = 10,
+        SP_HIGH = 11,
+        SP_LOW = 12
     };
 
     union Registers {
-        uint8_t reg_8[9];
+        uint8_t reg_8[13];
         struct {
             uint16_t BC : 16;
             uint16_t DE : 16;
             uint16_t HL : 16;
             uint8_t : 8;
             uint16_t AF  : 16;
+            uint16_t PC : 16;
+            uint16_t SP : 16;
         };
         struct{
             uint64_t : 64;
@@ -63,18 +69,19 @@ namespace CPU{
             bool h : 1;
             bool n : 1;
             bool z : 1;
-            uint8_t : 4;
+            uint8_t : 36;
         };
     };
 
     class Cpu {
         Registers registers;
-        uint16_t SP;
-        uint16_t PC;
         BUS::Bus *bus;
         uint64_t cycleNumber;
         uint8_t cycleToExecute;
-        bool doubleSpeed{};
+        bool doubleSpeed;
+        bool interruptEnabled;
+        bool haltMode;
+        bool stopMode;
         public:
         Cpu(BUS::Bus &bus);
 

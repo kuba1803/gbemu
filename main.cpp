@@ -9,6 +9,8 @@
 
 /* We will use this renderer to draw into this window every frame. */
 
+#include <vector>
+
 
 int main(int argc, char **argv) {
     static SDL_Window *window;

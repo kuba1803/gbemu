@@ -9,6 +9,8 @@ CPU::Cpu::Cpu(BUS::Bus &bus): registers({0, 0, 0, 0, 0, 0, 0, 0}) {
     this->bus = &bus;
     cycleNumber = 0;
     cycleToExecute = 0;
+    interruptEnabled = false;
+    haltMode = false;
 }
 
 
@@ -226,12 +228,12 @@ void CPU::Cpu::executeCycle() {
     uint8_t helpVariable8;
     uint8_t instruction;
     if (!cycleToExecute) {
-        instruction = bus->read(PC);
+        instruction = bus->read(registers.PC);
         switch (instruction) {
 #pragma region 8_BIT_TRANSFER
             //LD A A
             case 0b01111111:
-                ++PC;
+                ++registers.PC;
                 break;
             //LD A B
             case 0b01111000:
@@ -240,420 +242,420 @@ void CPU::Cpu::executeCycle() {
             //LD A C
             case 0b01111001:
                 registers.reg_8[A] = registers.reg_8[C];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD A D
             case 0b01111010:
                 registers.reg_8[A] = registers.reg_8[D];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD A E
             case 0b01111011:
                 registers.reg_8[A] = registers.reg_8[E];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD A H
             case 0b01111100:
                 registers.reg_8[A] = registers.reg_8[H];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD A L
             case 0b01111101:
                 registers.reg_8[A] = registers.reg_8[L];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD B A
             case 0b01000111:
                 registers.reg_8[B] = registers.reg_8[A];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD B B
             case 0b01000000:
                 registers.reg_8[B] = registers.reg_8[B];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD B C
             case 0b01000001:
                 registers.reg_8[B] = registers.reg_8[C];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD B D
             case 0b01000010:
                 registers.reg_8[B] = registers.reg_8[D];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD B E
             case 0b01000011:
                 registers.reg_8[B] = registers.reg_8[E];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD B H
             case 0b01000100:
                 registers.reg_8[B] = registers.reg_8[H];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD B L
             case 0b01000101:
                 registers.reg_8[B] = registers.reg_8[L];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD C A
             case 0b01001111:
                 registers.reg_8[C] = registers.reg_8[A];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD C B
             case 0b01001000:
                 registers.reg_8[C] = registers.reg_8[B];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD C C
             case 0b01001001:
                 registers.reg_8[C] = registers.reg_8[C];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD C D
             case 0b01001010:
                 registers.reg_8[C] = registers.reg_8[D];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD C E
             case 0b01001011:
                 registers.reg_8[C] = registers.reg_8[E];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD C H
             case 0b01001100:
                 registers.reg_8[C] = registers.reg_8[H];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD C L
             case 0b01001101:
                 registers.reg_8[C] = registers.reg_8[L];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD D A
             case 0b01010111:
                 registers.reg_8[D] = registers.reg_8[A];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD D B
             case 0b01010000:
                 registers.reg_8[D] = registers.reg_8[B];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD D C
             case 0b01010001:
                 registers.reg_8[D] = registers.reg_8[C];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD D D
             case 0b01010010:
                 registers.reg_8[D] = registers.reg_8[D];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD D E
             case 0b01010011:
                 registers.reg_8[D] = registers.reg_8[E];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD D H
             case 0b01010100:
                 registers.reg_8[D] = registers.reg_8[H];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD D L
             case 0b01010101:
                 registers.reg_8[D] = registers.reg_8[L];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD E A
             case 0b01011111:
                 registers.reg_8[E] = registers.reg_8[A];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD E B
             case 0b01011000:
                 registers.reg_8[E] = registers.reg_8[B];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD E C
             case 0b01011001:
                 registers.reg_8[E] = registers.reg_8[C];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD E D
             case 0b01011010:
                 registers.reg_8[E] = registers.reg_8[D];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD E E
             case 0b01011011:
                 registers.reg_8[E] = registers.reg_8[E];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD E H
             case 0b01011100:
                 registers.reg_8[E] = registers.reg_8[H];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD E L
             case 0b01011101:
                 registers.reg_8[E] = registers.reg_8[L];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD H A
             case 0b01100111:
                 registers.reg_8[H] = registers.reg_8[A];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD H B
             case 0b01100000:
                 registers.reg_8[H] = registers.reg_8[B];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD H C
             case 0b01100001:
                 registers.reg_8[H] = registers.reg_8[C];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD H D
             case 0b01100010:
                 registers.reg_8[H] = registers.reg_8[D];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD H E
             case 0b01100011:
                 registers.reg_8[H] = registers.reg_8[E];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD H H
             case 0b01100100:
                 registers.reg_8[H] = registers.reg_8[H];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD H L
             case 0b01100101:
                 registers.reg_8[H] = registers.reg_8[L];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD L A
             case 0b01101111:
                 registers.reg_8[L] = registers.reg_8[A];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD L B
             case 0b01101000:
                 registers.reg_8[L] = registers.reg_8[B];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD L C
             case 0b01101001:
                 registers.reg_8[L] = registers.reg_8[C];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD L D
             case 0b01101010:
                 registers.reg_8[L] = registers.reg_8[D];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD L E
             case 0b01101011:
                 registers.reg_8[L] = registers.reg_8[E];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD L H
             case 0b01101100:
                 registers.reg_8[L] = registers.reg_8[H];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD L L
             case 0b01101101:
                 registers.reg_8[L] = registers.reg_8[L];
-                ++PC;
+                ++registers.PC;
                 break;
             //LD A n
             case 0b00111110:
-                ++PC;
-                registers.reg_8[A] = bus->read(PC);
+                ++registers.PC;
+                registers.reg_8[A] = bus->read(registers.PC);
                 ++cycleToExecute;
-                ++PC;
+                ++registers.PC;
                 break;
             //LD B n
             case 0b00000110:
-                ++PC;
-                registers.reg_8[B] = bus->read(PC);
+                ++registers.PC;
+                registers.reg_8[B] = bus->read(registers.PC);
                 ++cycleToExecute;
-                ++PC;
+                ++registers.PC;
                 break;
             //LD C n
             case 0b00001110:
-                ++PC;
-                registers.reg_8[C] = bus->read(PC);
+                ++registers.PC;
+                registers.reg_8[C] = bus->read(registers.PC);
                 ++cycleToExecute;
-                ++PC;
+                ++registers.PC;
                 break;
             //LD D n
             case 0b00010110:
-                ++PC;
-                registers.reg_8[D] = bus->read(PC);
+                ++registers.PC;
+                registers.reg_8[D] = bus->read(registers.PC);
                 ++cycleToExecute;
-                ++PC;
+                ++registers.PC;
                 break;
             //LD E n
             case 0b00011110:
-                ++PC;
-                registers.reg_8[E] = bus->read(PC);
+                ++registers.PC;
+                registers.reg_8[E] = bus->read(registers.PC);
                 ++cycleToExecute;
-                ++PC;
+                ++registers.PC;
                 break;
             //LD H n
             case 0b00100110:
-                ++PC;
-                registers.reg_8[H] = bus->read(PC);
+                ++registers.PC;
+                registers.reg_8[H] = bus->read(registers.PC);
                 ++cycleToExecute;
-                ++PC;
+                ++registers.PC;
                 break;
             //LD L n
             case 0b00101110:
-                ++PC;
-                registers.reg_8[L] = bus->read(PC);
+                ++registers.PC;
+                registers.reg_8[L] = bus->read(registers.PC);
                 ++cycleToExecute;
-                ++PC;
+                ++registers.PC;
                 break;
             //LD A (HL)
             case 0b01111110:
                 registers.reg_8[A] = bus->read(registers.HL);
                 ++cycleToExecute;
-                ++PC;
+                ++registers.PC;
                 break;
             //LD B (HL)
             case 0b01000110:
                 registers.reg_8[B] = bus->read(registers.HL);
                 ++cycleToExecute;
-                ++PC;
+                ++registers.PC;
                 break;
             //LD C (HL)
             case 0b01001110:
                 registers.reg_8[C] = bus->read(registers.HL);
                 ++cycleToExecute;
-                ++PC;
+                ++registers.PC;
                 break;
             //LD D (HL)
             case 0b01010110:
                 registers.reg_8[D] = bus->read(registers.HL);
                 ++cycleToExecute;
-                ++PC;
+                ++registers.PC;
                 break;
             //LD E (HL)
             case 0b01011110:
                 registers.reg_8[E] = bus->read(registers.HL);
                 ++cycleToExecute;
-                ++PC;
+                ++registers.PC;
                 break;
             //LD H (HL)
             case 0b01100110:
                 registers.reg_8[H] = bus->read(registers.HL);
                 ++cycleToExecute;
-                ++PC;
+                ++registers.PC;
                 break;
             //LD L (HL)
             case 0b01101110:
                 registers.reg_8[L] = bus->read(registers.HL);
                 ++cycleToExecute;
-                ++PC;
+                ++registers.PC;
                 break;
             //LD (HL) A
             case 0b01110111:
                 bus->write(registers.HL, A);
                 ++cycleToExecute;
-                ++PC;
+                ++registers.PC;
                 break;
             //LD (HL) B
             case 0b01110000:
                 bus->write(registers.HL, B);
                 ++cycleToExecute;
-                ++PC;
+                ++registers.PC;
                 break;
             //LD (HL) C
             case 0b01110001:
                 bus->write(registers.HL, C);
                 ++cycleToExecute;
-                ++PC;
+                ++registers.PC;
                 break;
             //LD (HL) D
             case 0b01110010:
                 bus->write(registers.HL, D);
                 ++cycleToExecute;
-                ++PC;
+                ++registers.PC;
                 break;
             //LD (HL) E
             case 0b01110011:
                 bus->write(registers.HL, E);
                 ++cycleToExecute;
-                ++PC;
+                ++registers.PC;
                 break;
             //LD (HL) H
             case 0b01110100:
                 bus->write(registers.HL, H);
                 ++cycleToExecute;
-                ++PC;
+                ++registers.PC;
                 break;
             //LD (HL) L
             case 0b01110101:
                 bus->write(registers.HL, L);
                 ++cycleToExecute;
-                ++PC;
+                ++registers.PC;
                 break;
             //LD (HL) n
             case 0b00110110:
-                ++PC;
-                bus->write(registers.HL, bus->read(PC));
+                ++registers.PC;
+                bus->write(registers.HL, bus->read(registers.PC));
                 cycleToExecute += 2;
-                ++PC;
+                ++registers.PC;
             //LD A (BC)
             case 0b00001010:
                 registers.reg_8[A] = bus->read(registers.BC);
                 ++cycleToExecute;
-                ++PC;
+                ++registers.PC;
             //LD A (DE)
             case 0b00011010:
                 registers.reg_8[A] = bus->read(registers.DE);
                 ++cycleToExecute;
-                ++PC;
+                ++registers.PC;
             //LD A (C)
             case 0b11110010:
                 registers.reg_8[A] = bus->read(0xFF00 | C);
                 ++cycleToExecute;
-                ++PC;
+                ++registers.PC;
             //LD (C) A
             case 0b11100010:
                 bus->write(0xFF00 | C, A);
                 ++cycleToExecute;
-                ++PC;
+                ++registers.PC;
             //LD A (n)
             case 0b11110000:
-                ++PC;
-                registers.reg_8[A] = bus->read(0xFF00 | bus->read(PC));
+                ++registers.PC;
+                registers.reg_8[A] = bus->read(0xFF00 | bus->read(registers.PC));
                 cycleToExecute += 2;
-                ++PC;
+                ++registers.PC;
             //LD (n) A
             case 0b11100000:
-                ++PC;
-                bus->write(0xFF00 | bus->read(PC), A);
+                ++registers.PC;
+                bus->write(0xFF00 | bus->read(registers.PC), A);
                 cycleToExecute += 2;
-                ++PC;
+                ++registers.PC;
             //LD A (nn)
             case 0b11111010:
-                ++PC;
-                registers.reg_8[A] = bus->read(bus->read(PC << 8 | bus->read(PC + 1)));
-                PC += 2;
+                ++registers.PC;
+                registers.reg_8[A] = bus->read(bus->read(registers.PC << 8 | bus->read(registers.PC + 1)));
+                registers.PC += 2;
                 cycleToExecute += 4;
             //LD (nn) A
             case 0b11101010:
-                ++PC;
-                bus->write(bus->read(PC << 8 | bus->read(PC + 1)), A);
-                PC += 2;
+                ++registers.PC;
+                bus->write(bus->read(registers.PC << 8 | bus->read(registers.PC + 1)), A);
+                registers.PC += 2;
                 cycleToExecute += 4;
             //LD A (HLI)
             case 0b00101010:
@@ -661,7 +663,7 @@ void CPU::Cpu::executeCycle() {
                 registers.reg_8[A] = bus->read(helpVariable16);
                 ++helpVariable16;
                 registers.HL = helpVariable16;
-                ++PC;
+                ++registers.PC;
                 ++cycleToExecute;
             //LD A (HLD)
             case 0b00111010:
@@ -669,25 +671,25 @@ void CPU::Cpu::executeCycle() {
                 registers.reg_8[A] = bus->read(helpVariable16);
                 --helpVariable16;
                 registers.HL = helpVariable16;
-                ++PC;
+                ++registers.PC;
                 ++cycleToExecute;
             //LD (BC) A
             case 0b00000010:
                 bus->write(registers.BC, A);
                 ++cycleToExecute;
-                ++PC;
+                ++registers.PC;
             //LD (DE) A
             case 0b00010010:
                 bus->write(registers.DE, A);
                 ++cycleToExecute;
-                ++PC;
+                ++registers.PC;
             //LD (HLI) A
             case 0b00100010:
                 helpVariable16 = registers.HL;
                 bus->write(helpVariable16, A);
                 ++helpVariable16;
                 registers.HL = helpVariable16;
-                ++PC;
+                ++registers.PC;
                 ++cycleToExecute;
             case 0b00110010:
                 //LD (HLD) A
@@ -695,619 +697,620 @@ void CPU::Cpu::executeCycle() {
                 bus->write(helpVariable16, A);
                 --helpVariable16;
                 registers.HL = helpVariable16;
-                ++PC;
+                ++registers.PC;
                 ++cycleToExecute;
 #pragma endregion 8_BIT_TRANSFER
 #pragma region 16_BIT_TRANSFER
             // LM BC nn
             case 0b00000001:
-                ++PC;
-                registers.reg_8[B] = bus->read(bus->read(PC));
-                ++PC;
-                registers.reg_8[C] = bus->read(bus->read(PC));
-                ++PC;
+                ++registers.PC;
+                registers.reg_8[B] = bus->read(bus->read(registers.PC));
+                ++registers.PC;
+                registers.reg_8[C] = bus->read(bus->read(registers.PC));
+                ++registers.PC;
                 cycleNumber += 2;
                 break;
             // LM DE nn
             case 0b00010001:
-                ++PC;
-                registers.reg_8[E] = bus->read(bus->read(PC));
-                ++PC;
-                registers.reg_8[D] = bus->read(bus->read(PC));
-                ++PC;
+                ++registers.PC;
+                registers.reg_8[E] = bus->read(bus->read(registers.PC));
+                ++registers.PC;
+                registers.reg_8[D] = bus->read(bus->read(registers.PC));
+                ++registers.PC;
                 cycleNumber += 2;
                 break;
             // LM HL nn
             case 0b00100001:
-                ++PC;
-                registers.reg_8[H] = bus->read(bus->read(PC));
-                ++PC;
-                registers.reg_8[L] = bus->read(bus->read(PC));
-                ++PC;
+                ++registers.PC;
+                registers.reg_8[H] = bus->read(bus->read(registers.PC));
+                ++registers.PC;
+                registers.reg_8[L] = bus->read(bus->read(registers.PC));
+                ++registers.PC;
                 cycleNumber += 2;
                 break;
-            // LM SP nn
+            // LM registers.SP nn
             case 0b00110001:
-                ++PC;
-                SP = bus->read(bus->read(PC)) | bus->read(bus->read(PC + 1) << 8);
-                PC += 2;
+                ++registers.PC;
+                registers.SP = bus->read(bus->read(registers.PC)) | bus->read(bus->read(registers.PC + 1) << 8);
+                registers.PC += 2;
                 cycleNumber += 2;
                 break;
-            //LD SP HL
+            //LD registers.SP HL
             case 0b011111001:
-                SP = registers.HL;
-                PC += 2;
+                registers.SP = registers.HL;
+                registers.PC += 2;
                 ++cycleNumber;
                 break;
             //PUSH BC
             case 0b11000101:
-                --SP;
-                bus->write(SP, B);
-                --SP;
-                bus->write(SP, C);
-                ++PC;
+                --registers.SP;
+                bus->write(registers.SP, B);
+                --registers.SP;
+                bus->write(registers.SP, C);
+                ++registers.PC;
                 cycleToExecute += 3;
                 break;
             //PUSH DE
             case 0b11010101:
-                --SP;
-                bus->write(SP, D);
-                --SP;
-                bus->write(SP, E);
-                ++PC;
+                --registers.SP;
+                bus->write(registers.SP, D);
+                --registers.SP;
+                bus->write(registers.SP, E);
+                ++registers.PC;
                 cycleToExecute += 3;
                 break;
             //PUSH HL
             case 0b11100101:
-                --SP;
-                bus->write(SP, H);
-                --SP;
-                bus->write(SP, L);
-                ++PC;
+                --registers.SP;
+                bus->write(registers.SP, H);
+                --registers.SP;
+                bus->write(registers.SP, L);
+                ++registers.PC;
                 cycleToExecute += 3;
                 break;
             //PUSH AF
             case 0b11110101:
-                --SP;
-                bus->write(SP, A);
-                --SP;
-                bus->write(SP, registers.reg_8[F]);
-                ++PC;
+                --registers.SP;
+                bus->write(registers.SP, A);
+                --registers.SP;
+                bus->write(registers.SP, registers.reg_8[F]);
+                ++registers.PC;
                 cycleToExecute += 3;
                 break;
             //POP BC
             case 0b11000001:
-                registers.reg_8[C] = bus->read(bus->read(SP));
-                ++SP;
-                registers.reg_8[B] = bus->read(bus->read(SP));
-                ++SP;
-                ++PC;
+                registers.reg_8[C] = bus->read(bus->read(registers.SP));
+                ++registers.SP;
+                registers.reg_8[B] = bus->read(bus->read(registers.SP));
+                ++registers.SP;
+                ++registers.PC;
                 cycleToExecute += 2;
                 break;
             //POP DE
             case 0b11010001:
-                registers.reg_8[E] = bus->read(bus->read(SP));
-                ++SP;
-                registers.reg_8[D] = bus->read(bus->read(SP));
-                ++SP;
-                ++PC;
+                registers.reg_8[E] = bus->read(bus->read(registers.SP));
+                ++registers.SP;
+                registers.reg_8[D] = bus->read(bus->read(registers.SP));
+                ++registers.SP;
+                ++registers.PC;
                 cycleToExecute += 2;
                 break;
             //POP HL
             case 0b11100001:
-                registers.reg_8[L] = bus->read(bus->read(SP));
-                ++SP;
-                registers.reg_8[H] = bus->read(bus->read(SP));
-                ++SP;
-                ++PC;
+                registers.reg_8[L] = bus->read(bus->read(registers.SP));
+                ++registers.SP;
+                registers.reg_8[H] = bus->read(bus->read(registers.SP));
+                ++registers.SP;
+                ++registers.PC;
                 cycleToExecute += 2;
                 break;
             //POP AF
             case 0b11110001:
-                registers.reg_8[F] = bus->read(bus->read(SP));
-                ++SP;
-                registers.reg_8[A] = bus->read(bus->read(SP));
-                ++SP;
-                ++PC;
+                registers.reg_8[F] = bus->read(bus->read(registers.SP));
+                ++registers.SP;
+                registers.reg_8[A] = bus->read(bus->read(registers.SP));
+                ++registers.SP;
+                ++registers.PC;
                 cycleToExecute += 2;
                 break;
-            //LDHL SP e
+            //LDHL registers.SP e
             case 0b11111000:
-                helpVariable8 = bus->read(bus->read(PC));
-                helpVariable16 = SP + static_cast<int8_t>(helpVariable8);
-                registers.reg_8[F] = (SP > helpVariable16) << 4 | ((SP & 0x0F) + (helpVariable8 & 0x0F) > 0x0F) << 5;
+                helpVariable8 = bus->read(bus->read(registers.PC));
+                helpVariable16 = registers.SP + static_cast<int8_t>(helpVariable8);
+                registers.reg_8[F] = (registers.SP > helpVariable16) << 4 | (
+                                         (registers.SP & 0x0F) + (helpVariable8 & 0x0F) > 0x0F) << 5;
                 registers.reg_8[H] = helpVariable16 >> 8;
                 registers.reg_8[L] = helpVariable16 & 0xFF;
                 cycleToExecute += 2;
-            //LD (nn) SP
+            //LD (nn) registers.SP
             case 0b00001000:
-                ++PC;
-                bus->write(bus->read(PC), SP & 0xFF);
-                ++PC;
-                bus->write(bus->read(PC), SP >> 8);
-                ++PC;
+                ++registers.PC;
+                bus->write(bus->read(registers.PC), registers.reg_8[SP_LOW]);
+                ++registers.PC;
+                bus->write(bus->read(registers.PC), registers.reg_8[SP_HIGH]);
+                ++registers.PC;
                 cycleToExecute += 4;
 #pragma endregion 16_BIT_TRANSFER
 #pragma region 8_BIT_ARITHMETIC
             //ADD A A
             case 0b10000111:
                 registers.reg_8[A] = arithmetic_8<ADD>(A, A, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //ADD A B
             case 0b10000000:
                 registers.reg_8[A] = arithmetic_8<ADD>(A, B, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //ADD A C
             case 0b10000001:
                 registers.reg_8[A] = arithmetic_8<ADD>(A, C, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //ADD A D
             case 0b10000010:
                 registers.reg_8[A] = arithmetic_8<ADD>(A, D, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //ADD A E
             case 0b10000011:
                 registers.reg_8[A] = arithmetic_8<ADD>(A, E, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //ADD A H
             case 0b10000100:
                 registers.reg_8[A] = arithmetic_8<ADD>(A, H, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //ADD A L
             case 0b10000101:
                 registers.reg_8[A] = arithmetic_8<ADD>(A, L, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //ADD A n
             case 0b11000110:
-                ++PC;
-                registers.reg_8[A] = arithmetic_8<ADD>(A, bus->read(PC), registers);
-                ++PC;
+                ++registers.PC;
+                registers.reg_8[A] = arithmetic_8<ADD>(A, bus->read(registers.PC), registers);
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
             //ADD A (HL)
             case 0b10000110:
                 helpVariable16 = registers.HL;
                 registers.reg_8[A] = arithmetic_8<ADD>(A, bus->read(helpVariable16), registers);
-                ++PC;
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
             //ADC A A
             case 0b10001111:
                 registers.reg_8[A] = arithmetic_8<ADC>(A, A, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //ADC A B
             case 0b10001000:
                 registers.reg_8[A] = arithmetic_8<ADC>(A, B, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //ADC A C
             case 0b10001001:
                 registers.reg_8[A] = arithmetic_8<ADC>(A, C, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //ADC A D
             case 0b10001010:
                 registers.reg_8[A] = arithmetic_8<ADC>(A, D, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //ADC A E
             case 0b10001011:
                 registers.reg_8[A] = arithmetic_8<ADC>(A, E, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //ADC A H
             case 0b10001100:
                 registers.reg_8[A] = arithmetic_8<ADC>(A, H, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //ADC A L
             case 0b10001101:
                 registers.reg_8[A] = arithmetic_8<ADC>(A, L, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //ADC A n
             case 0b11001110:
-                ++PC;
-                registers.reg_8[A] = arithmetic_8<ADC>(A, bus->read(PC), registers);
-                ++PC;
+                ++registers.PC;
+                registers.reg_8[A] = arithmetic_8<ADC>(A, bus->read(registers.PC), registers);
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
             //ADC A (HL)
             case 0b10001110:
                 helpVariable16 = registers.HL;
                 registers.reg_8[A] = arithmetic_8<ADC>(A, bus->read(helpVariable16), registers);
-                ++PC;
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
             //SUB A A
             case 0b10010111:
                 registers.reg_8[A] = arithmetic_8<SUB>(A, A, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //SUB A B
             case 0b10010000:
                 registers.reg_8[A] = arithmetic_8<SUB>(A, B, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //SUB A C
             case 0b10010001:
                 registers.reg_8[A] = arithmetic_8<SUB>(A, C, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //SUB A D
             case 0b10010010:
                 registers.reg_8[A] = arithmetic_8<SUB>(A, D, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //SUB A E
             case 0b10010011:
                 registers.reg_8[A] = arithmetic_8<SUB>(A, E, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //SUB A H
             case 0b10010100:
                 registers.reg_8[A] = arithmetic_8<SUB>(A, H, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //SUB A L
             case 0b10010101:
                 registers.reg_8[A] = arithmetic_8<SUB>(A, L, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //SUB A n
             case 0b11010110:
-                ++PC;
-                registers.reg_8[A] = arithmetic_8<SUB>(A, bus->read(PC), registers);
-                ++PC;
+                ++registers.PC;
+                registers.reg_8[A] = arithmetic_8<SUB>(A, bus->read(registers.PC), registers);
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
             //SUB A (HL)
             case 0b10010110:
                 helpVariable16 = registers.HL;
                 registers.reg_8[A] = arithmetic_8<SUB>(A, bus->read(helpVariable16), registers);
-                ++PC;
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
             //SBC A A
             case 0b10011111:
                 registers.reg_8[A] = arithmetic_8<SBC>(A, A, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //SBC A B
             case 0b10011000:
                 registers.reg_8[A] = arithmetic_8<SBC>(A, B, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //SBC A C
             case 0b10011001:
                 registers.reg_8[A] = arithmetic_8<SBC>(A, C, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //SBC A D
             case 0b10011010:
                 registers.reg_8[A] = arithmetic_8<SBC>(A, D, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //SBC A E
             case 0b10011011:
                 registers.reg_8[A] = arithmetic_8<SBC>(A, E, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //SBC A H
             case 0b10011100:
                 registers.reg_8[A] = arithmetic_8<SBC>(A, H, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //SBC A L
             case 0b10011101:
                 registers.reg_8[A] = arithmetic_8<SBC>(A, L, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //SBC A n
             case 0b11011110:
-                ++PC;
-                registers.reg_8[A] = arithmetic_8<SBC>(A, bus->read(PC), registers);
-                ++PC;
+                ++registers.PC;
+                registers.reg_8[A] = arithmetic_8<SBC>(A, bus->read(registers.PC), registers);
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
             //SBC A (HL)
             case 0b10011110:
                 helpVariable16 = registers.HL;
                 registers.reg_8[A] = arithmetic_8<SUB>(A, bus->read(helpVariable16), registers);
-                ++PC;
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
             //AND A A
             case 0b10100111:
                 registers.reg_8[A] = arithmetic_8<AND>(A, A, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //AND A B
             case 0b10100000:
                 registers.reg_8[A] = arithmetic_8<AND>(A, B, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //AND A C
             case 0b10100001:
                 registers.reg_8[A] = arithmetic_8<AND>(A, C, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //AND A D
             case 0b10100010:
                 registers.reg_8[A] = arithmetic_8<AND>(A, D, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //AND A E
             case 0b10100011:
                 registers.reg_8[A] = arithmetic_8<AND>(A, E, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //AND A H
             case 0b10100100:
                 registers.reg_8[A] = arithmetic_8<AND>(A, H, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //AND A L
             case 0b10100101:
                 registers.reg_8[A] = arithmetic_8<AND>(A, L, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //AND A n
             case 0b11100110:
-                ++PC;
-                registers.reg_8[A] = arithmetic_8<AND>(A, bus->read(PC), registers);
-                registers.reg_8[A] &= bus->read(PC);
-                ++PC;
+                ++registers.PC;
+                registers.reg_8[A] = arithmetic_8<AND>(A, bus->read(registers.PC), registers);
+                registers.reg_8[A] &= bus->read(registers.PC);
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
             //AND A (HL)
             case 0b10100110:
                 helpVariable16 = registers.HL;
                 registers.reg_8[A] = arithmetic_8<AND>(A, bus->read(helpVariable16), registers);
-                ++PC;
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
             //OR A A
             case 0b10110111:
                 registers.reg_8[A] = arithmetic_8<OR>(A, A, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //OR A B
             case 0b10110000:
                 registers.reg_8[A] = arithmetic_8<OR>(A, B, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //OR A C
             case 0b10110001:
                 registers.reg_8[A] = arithmetic_8<OR>(A, C, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //OR A D
             case 0b10110010:
                 registers.reg_8[A] = arithmetic_8<OR>(A, D, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //OR A E
             case 0b10110011:
                 registers.reg_8[A] = arithmetic_8<OR>(A, E, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //OR A H
             case 0b10110100:
                 registers.reg_8[A] = arithmetic_8<OR>(A, H, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //OR A L
             case 0b10110101:
                 registers.reg_8[A] = arithmetic_8<OR>(A, L, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //OR A n
             case 0b11110110:
-                ++PC;
-                registers.reg_8[A] = arithmetic_8<OR>(A, bus->read(PC), registers);
-                registers.reg_8[A] &= bus->read(PC);
-                ++PC;
+                ++registers.PC;
+                registers.reg_8[A] = arithmetic_8<OR>(A, bus->read(registers.PC), registers);
+                registers.reg_8[A] &= bus->read(registers.PC);
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
             //OR A (HL)
             case 0b10110110:
                 helpVariable16 = registers.HL;
                 registers.reg_8[A] = arithmetic_8<OR>(A, bus->read(helpVariable16), registers);
-                ++PC;
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
             //XOR A A
             case 0b10101111:
                 registers.reg_8[A] = arithmetic_8<XOR>(A, A, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //XOR A B
             case 0b10101000:
                 registers.reg_8[A] = arithmetic_8<XOR>(A, B, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //XOR A C
             case 0b10101001:
                 registers.reg_8[A] = arithmetic_8<XOR>(A, C, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //XOR A D
             case 0b10101010:
                 registers.reg_8[A] = arithmetic_8<XOR>(A, D, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //XOR A E
             case 0b10101011:
                 registers.reg_8[A] = arithmetic_8<XOR>(A, E, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //XOR A H
             case 0b10101100:
                 registers.reg_8[A] = arithmetic_8<XOR>(A, H, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //XOR A L
             case 0b10101101:
                 registers.reg_8[A] = arithmetic_8<XOR>(A, L, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //XOR A n
             case 0b11101110:
-                ++PC;
-                registers.reg_8[A] = arithmetic_8<XOR>(A, bus->read(PC), registers);
-                registers.reg_8[A] &= bus->read(PC);
-                ++PC;
+                ++registers.PC;
+                registers.reg_8[A] = arithmetic_8<XOR>(A, bus->read(registers.PC), registers);
+                registers.reg_8[A] &= bus->read(registers.PC);
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
             //XOR A (HL)
             case 0b10101110:
                 helpVariable16 = registers.HL;
                 registers.reg_8[A] = arithmetic_8<XOR>(A, bus->read(helpVariable16), registers);
-                ++PC;
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
             //CP A A
             case 0b10111111:
                 registers.reg_8[A] = arithmetic_8<CP>(A, A, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //CP A B
             case 0b10111000:
                 registers.reg_8[A] = arithmetic_8<CP>(A, B, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //CP A C
             case 0b10111001:
                 registers.reg_8[A] = arithmetic_8<CP>(A, C, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //CP A D
             case 0b10111010:
                 registers.reg_8[A] = arithmetic_8<CP>(A, D, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //CP A E
             case 0b10111011:
                 registers.reg_8[A] = arithmetic_8<CP>(A, E, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //CP A H
             case 0b10111100:
                 registers.reg_8[A] = arithmetic_8<CP>(A, H, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //CP A L
             case 0b10111101:
                 registers.reg_8[A] = arithmetic_8<CP>(A, L, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //CP A n
             case 0b11111110:
-                ++PC;
-                registers.reg_8[A] = arithmetic_8<CP>(A, bus->read(PC), registers);
-                registers.reg_8[A] &= bus->read(PC);
-                ++PC;
+                ++registers.PC;
+                registers.reg_8[A] = arithmetic_8<CP>(A, bus->read(registers.PC), registers);
+                registers.reg_8[A] &= bus->read(registers.PC);
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
             //CP A (HL)
             case 0b10111110:
                 helpVariable16 = registers.HL;
                 registers.reg_8[A] = arithmetic_8<CP>(A, bus->read(helpVariable16), registers);
-                ++PC;
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
             //INC A
             case 0b00111100:
                 registers.reg_8[A] = arithmetic_8<INC>(A, 1, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //INC B
             case 0b00000100:
                 registers.reg_8[B] = arithmetic_8<INC>(B, 1, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //INC C
             case 0b00001100:
                 registers.reg_8[C] = arithmetic_8<INC>(C, 1, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //INC D
             case 0b00010100:
                 registers.reg_8[D] = arithmetic_8<INC>(D, 1, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //INC E
             case 0b00011100:
                 registers.reg_8[E] = arithmetic_8<INC>(E, 1, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //INC H
             case 0b00100100:
                 registers.reg_8[H] = arithmetic_8<INC>(H, 1, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //INC L
             case 0b00101100:
                 registers.reg_8[L] = arithmetic_8<INC>(L, 1, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //INC (HL)
             case 0b00110100:
                 helpVariable16 = registers.HL;
                 bus->write(helpVariable16, arithmetic_8<INC>(bus->read(helpVariable16), 1, registers));
                 cycleToExecute += 2;
-                ++PC;
+                ++registers.PC;
                 break;
             //DEC A
             case 0b00111101:
                 registers.reg_8[A] = arithmetic_8<DEC>(A, 1, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //DEC B
             case 0b00000101:
                 registers.reg_8[B] = arithmetic_8<DEC>(B, 1, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //DEC C
             case 0b00001101:
                 registers.reg_8[C] = arithmetic_8<DEC>(C, 1, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //DEC D
             case 0b00010101:
                 registers.reg_8[D] = arithmetic_8<DEC>(D, 1, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //DEC E
             case 0b00011101:
                 registers.reg_8[E] = arithmetic_8<DEC>(E, 1, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //DEC H
             case 0b00100101:
                 registers.reg_8[H] = arithmetic_8<DEC>(H, 1, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //DEC L
             case 0b00101101:
                 registers.reg_8[L] = arithmetic_8<DEC>(L, 1, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //DEC (HL)
             case 0b00110101:
                 helpVariable16 = registers.HL;
                 bus->write(helpVariable16, arithmetic_8<DEC>(bus->read(helpVariable16), 1, registers));
                 cycleToExecute += 2;
-                ++PC;
+                ++registers.PC;
                 break;
 
 
@@ -1318,7 +1321,7 @@ void CPU::Cpu::executeCycle() {
                 helpVariable16 = arithmetic_16<ADD>(registers.HL, registers.BC, registers);
                 registers.reg_8[H] = helpVariable16 >> 8;
                 registers.reg_8[L] = helpVariable16 & 0xFF;
-                ++PC;
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
             // ADD HL DE
@@ -1326,7 +1329,7 @@ void CPU::Cpu::executeCycle() {
                 helpVariable16 = arithmetic_16<ADD>(registers.HL, registers.DE, registers);
                 registers.reg_8[H] = helpVariable16 >> 8;
                 registers.reg_8[L] = helpVariable16 & 0xFF;
-                ++PC;
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
             // ADD HL HL
@@ -1335,23 +1338,23 @@ void CPU::Cpu::executeCycle() {
                 helpVariable16 = arithmetic_16<ADD>(helpVariable16, helpVariable16, registers);
                 registers.reg_8[H] = helpVariable16 >> 8;
                 registers.reg_8[L] = helpVariable16 & 0xFF;
-                ++PC;
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
-            // ADD HL SP
+            // ADD HL registers.SP
             case 0b00111001:
-                helpVariable16 = arithmetic_16<ADD>(registers.HL, SP, registers);
+                helpVariable16 = arithmetic_16<ADD>(registers.HL, registers.SP, registers);
                 registers.reg_8[H] = helpVariable16 >> 8;
                 registers.reg_8[L] = helpVariable16 & 0xFF;
-                ++PC;
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
-            //ADD SP e
+            //ADD registers.SP e
             case 0b11101000:
-                ++PC;
+                ++registers.PC;
                 registers.reg_8[F] &= 0b00111111;
-                SP = arithmetic_16<ADD>(SP, bus->read(PC), registers);
-                ++PC;
+                registers.SP = arithmetic_16<ADD>(registers.SP, bus->read(registers.PC), registers);
+                ++registers.PC;
                 cycleToExecute += 3;
                 break;
             //INC BC
@@ -1359,7 +1362,7 @@ void CPU::Cpu::executeCycle() {
                 helpVariable16 = arithmetic_16<INC>(registers.BC, 1, registers);
                 registers.reg_8[B] = helpVariable16 >> 8;
                 registers.reg_8[C] = helpVariable16 & 0xFF;
-                ++PC;
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
             //INC DE
@@ -1367,7 +1370,7 @@ void CPU::Cpu::executeCycle() {
                 helpVariable16 = arithmetic_16<INC>(registers.DE, 1, registers);
                 registers.reg_8[D] = helpVariable16 >> 8;
                 registers.reg_8[E] = helpVariable16 & 0xFF;
-                ++PC;
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
             //INC HL
@@ -1375,13 +1378,13 @@ void CPU::Cpu::executeCycle() {
                 helpVariable16 = arithmetic_16<INC>(registers.HL, 1, registers);
                 registers.reg_8[H] = helpVariable16 >> 8;
                 registers.reg_8[L] = helpVariable16 & 0xFF;
-                ++PC;
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
-            //INC SP
+            //INC registers.SP
             case 0b00110011:
-                SP = arithmetic_16<INC>(SP, 1, registers);
-                ++PC;
+                registers.SP = arithmetic_16<INC>(registers.SP, 1, registers);
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
             //DEC BC
@@ -1389,7 +1392,7 @@ void CPU::Cpu::executeCycle() {
                 helpVariable16 = arithmetic_16<DEC>(registers.BC, 1, registers);
                 registers.reg_8[B] = helpVariable16 >> 8;
                 registers.reg_8[C] = helpVariable16 & 0xFF;
-                ++PC;
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
             //DEC DE
@@ -1397,7 +1400,7 @@ void CPU::Cpu::executeCycle() {
                 helpVariable16 = arithmetic_16<DEC>(registers.DE, 1, registers);
                 registers.reg_8[D] = helpVariable16 >> 8;
                 registers.reg_8[E] = helpVariable16 & 0xFF;
-                ++PC;
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
             //DEC HL
@@ -1405,13 +1408,13 @@ void CPU::Cpu::executeCycle() {
                 helpVariable16 = arithmetic_16<DEC>(registers.HL, 1, registers);
                 registers.reg_8[H] = helpVariable16 >> 8;
                 registers.reg_8[L] = helpVariable16 & 0xFF;
-                ++PC;
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
-            //DEC SP
+            //DEC registers.SP
             case 0b00111011:
-                SP = arithmetic_16<DEC>(SP, 1, registers);
-                ++PC;
+                registers.SP = arithmetic_16<DEC>(registers.SP, 1, registers);
+                ++registers.PC;
                 ++cycleToExecute;
                 break;
 
@@ -1421,417 +1424,417 @@ void CPU::Cpu::executeCycle() {
             //RLCA
             case 0b00000111:
                 registers.reg_8[A] = shift_rotation<RLC>(A, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //RLA
             case 0b00010111:
                 registers.reg_8[A] = shift_rotation<RL>(A, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //RRCA
             case 0b00001111:
                 registers.reg_8[A] = shift_rotation<RRC>(A, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             //RRA
             case 0b00011111:
                 registers.reg_8[A] = shift_rotation<RR>(A, registers);
-                ++PC;
+                ++registers.PC;
                 break;
             // double line instruction
             case 0b11001011:
-                ++PC;
-                switch (bus->read(PC)) {
+                ++registers.PC;
+                switch (bus->read(registers.PC)) {
                     //RLC A
                     case 0b00000111:
                         registers.reg_8[A] = shift_rotation<RLC>(A, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RLC B
                     case 0b00000000:
                         registers.reg_8[B] = shift_rotation<RLC>(B, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RLC C
                     case 0b00000001:
                         registers.reg_8[C] = shift_rotation<RLC>(C, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RLC D
                     case 0b00000010:
                         registers.reg_8[D] = shift_rotation<RLC>(D, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RLC E
                     case 0b00000011:
                         registers.reg_8[E] = shift_rotation<RLC>(E, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RLC H
                     case 0b00000100:
                         registers.reg_8[H] = shift_rotation<RLC>(H, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RLC L
                     case 0b00000101:
                         registers.reg_8[L] = shift_rotation<RLC>(L, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RLC (HL)
                     case 0b00000110:
                         helpVariable16 = registers.HL;
                         bus->write(shift_rotation<RLC>(bus->read(helpVariable16), registers), helpVariable16);
-                        ++PC;
+                        ++registers.PC;
                         cycleToExecute += 3;
                         break;
                     //RL A
                     case 0b00010111:
                         registers.reg_8[A] = shift_rotation<RL>(A, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RL B
                     case 0b00010000:
                         registers.reg_8[B] = shift_rotation<RL>(B, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RL C
                     case 0b00010001:
                         registers.reg_8[C] = shift_rotation<RL>(C, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RL D
                     case 0b00010010:
                         registers.reg_8[D] = shift_rotation<RL>(D, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RL E
                     case 0b00010011:
                         registers.reg_8[E] = shift_rotation<RL>(E, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RL H
                     case 0b00010100:
                         registers.reg_8[H] = shift_rotation<RL>(H, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RL L
                     case 0b00010101:
                         registers.reg_8[L] = shift_rotation<RL>(L, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RL (HL)
                     case 0b00010110:
                         helpVariable16 = registers.HL;
                         bus->write(shift_rotation<RL>(bus->read(helpVariable16), registers), helpVariable16);
-                        ++PC;
+                        ++registers.PC;
                         cycleToExecute += 3;
                         break;
                     //RRC A
                     case 0b00001111:
                         registers.reg_8[A] = shift_rotation<RRC>(A, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RRC B
                     case 0b00001000:
                         registers.reg_8[B] = shift_rotation<RRC>(B, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RRC C
                     case 0b00001001:
                         registers.reg_8[C] = shift_rotation<RRC>(C, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RRC D
                     case 0b00001010:
                         registers.reg_8[D] = shift_rotation<RRC>(D, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RRC E
                     case 0b00001011:
                         registers.reg_8[E] = shift_rotation<RRC>(E, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RRC H
                     case 0b00001100:
                         registers.reg_8[H] = shift_rotation<RRC>(H, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RRC L
                     case 0b00001101:
                         registers.reg_8[L] = shift_rotation<RRC>(L, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RRC (HL)
                     case 0b00001110:
                         helpVariable16 = registers.HL;
                         bus->write(shift_rotation<RRC>(bus->read(helpVariable16), registers), helpVariable16);
-                        ++PC;
+                        ++registers.PC;
                         cycleToExecute += 3;
                         break;
                     //RR A
                     case 0b00011111:
                         registers.reg_8[A] = shift_rotation<RR>(A, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RR B
                     case 0b00011000:
                         registers.reg_8[B] = shift_rotation<RR>(B, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RR C
                     case 0b00011001:
                         registers.reg_8[C] = shift_rotation<RR>(C, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RR D
                     case 0b00011010:
                         registers.reg_8[D] = shift_rotation<RR>(D, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RR E
                     case 0b00011011:
                         registers.reg_8[E] = shift_rotation<RR>(E, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RR H
                     case 0b00011100:
                         registers.reg_8[H] = shift_rotation<RR>(H, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RR L
                     case 0b00011101:
                         registers.reg_8[L] = shift_rotation<RR>(L, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //RR (HL)
                     case 0b00011110:
                         helpVariable16 = registers.HL;
                         bus->write(shift_rotation<RR>(bus->read(helpVariable16), registers), helpVariable16);
-                        ++PC;
+                        ++registers.PC;
                         cycleToExecute += 3;
                         break;
                     //SLA A
                     case 0b00100111:
                         registers.reg_8[A] = shift_rotation<SLA>(A, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SLA B
                     case 0b00100000:
                         registers.reg_8[B] = shift_rotation<SLA>(B, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SLA C
                     case 0b00100001:
                         registers.reg_8[C] = shift_rotation<SLA>(C, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SLA D
                     case 0b00100010:
                         registers.reg_8[D] = shift_rotation<SLA>(D, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SLA E
                     case 0b00100011:
                         registers.reg_8[E] = shift_rotation<SLA>(E, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SLA H
                     case 0b00100100:
                         registers.reg_8[H] = shift_rotation<SLA>(H, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SLA L
                     case 0b00100101:
                         registers.reg_8[L] = shift_rotation<SLA>(L, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SLA (HL)
                     case 0b00100110:
                         helpVariable16 = registers.HL;
                         bus->write(shift_rotation<SLA>(bus->read(helpVariable16), registers), helpVariable16);
-                        ++PC;
+                        ++registers.PC;
                         cycleToExecute += 3;
                         break;
                     //SRA A
                     case 0b00101111:
                         registers.reg_8[A] = shift_rotation<SRA>(A, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SRA B
                     case 0b00101000:
                         registers.reg_8[B] = shift_rotation<SRA>(B, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SRA C
                     case 0b00101001:
                         registers.reg_8[C] = shift_rotation<SRA>(C, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SRA D
                     case 0b00101010:
                         registers.reg_8[D] = shift_rotation<SRA>(D, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SRA E
                     case 0b00101011:
                         registers.reg_8[E] = shift_rotation<SRA>(E, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SRA H
                     case 0b00101100:
                         registers.reg_8[H] = shift_rotation<SRA>(H, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SRA L
                     case 0b00101101:
                         registers.reg_8[L] = shift_rotation<SRA>(L, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SRA (HL)
                     case 0b00101110:
                         helpVariable16 = registers.HL;
                         bus->write(shift_rotation<SRA>(bus->read(helpVariable16), registers), helpVariable16);
-                        ++PC;
+                        ++registers.PC;
                         cycleToExecute += 3;
                         break;
                     //SRL A
                     case 0b00111111:
                         registers.reg_8[A] = shift_rotation<SRL>(A, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SRL B
                     case 0b00111000:
                         registers.reg_8[B] = shift_rotation<SRL>(B, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SRL C
                     case 0b00111001:
                         registers.reg_8[C] = shift_rotation<SRL>(C, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SRL D
                     case 0b00111010:
                         registers.reg_8[D] = shift_rotation<SRL>(D, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SRL E
                     case 0b00111011:
                         registers.reg_8[E] = shift_rotation<SRL>(E, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SRL H
                     case 0b00111100:
                         registers.reg_8[H] = shift_rotation<SRL>(H, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SRL L
                     case 0b00111101:
                         registers.reg_8[L] = shift_rotation<SRL>(L, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SRL (HL)
                     case 0b00111110:
                         helpVariable16 = registers.HL;
                         bus->write(shift_rotation<SRL>(bus->read(helpVariable16), registers), helpVariable16);
-                        ++PC;
+                        ++registers.PC;
                         cycleToExecute += 3;
                         break;
                     //SWAP A
                     case 0b00110111:
                         registers.reg_8[A] = shift_rotation<SRL>(A, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SWAP B
                     case 0b00110000:
                         registers.reg_8[B] = shift_rotation<SRL>(B, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SWAP C
                     case 0b00110001:
                         registers.reg_8[C] = shift_rotation<SRL>(C, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SWAP D
                     case 0b00110010:
                         registers.reg_8[D] = shift_rotation<SRL>(D, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SWAP E
                     case 0b00110011:
                         registers.reg_8[E] = shift_rotation<SRL>(E, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SWAP H
                     case 0b00110100:
                         registers.reg_8[H] = shift_rotation<SRL>(H, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SWAP L
                     case 0b00110101:
                         registers.reg_8[L] = shift_rotation<SRL>(L, registers);
-                        ++PC;
+                        ++registers.PC;
                         ++cycleToExecute;
                         break;
                     //SWAP (HL)
                     case 0b00110110:
                         helpVariable16 = registers.HL;
                         bus->write(shift_rotation<SRL>(bus->read(helpVariable16), registers), helpVariable16);
-                        ++PC;
+                        ++registers.PC;
                         cycleToExecute += 3;
                         break;
 #pragma endregion ROTATION_SHIFT
@@ -1849,7 +1852,7 @@ void CPU::Cpu::executeCycle() {
                                                        registers.reg_8[instruction & 0b111], registers);
                                     ++cycleToExecute;
                                 }
-                                ++PC;
+                                ++registers.PC;
                                 break;
                             //SET
                             case 0b11:
@@ -1863,7 +1866,7 @@ void CPU::Cpu::executeCycle() {
                                         (instruction & 0b111000) >> 3, registers.reg_8[instruction & 0b111], registers);
                                     ++cycleToExecute;
                                 }
-                                ++PC;
+                                ++registers.PC;
                                 break;
                             //RES
                             case 0b10:
@@ -1877,7 +1880,7 @@ void CPU::Cpu::executeCycle() {
                                         (instruction & 0b111000) >> 3, registers.reg_8[instruction & 0b111], registers);
                                     ++cycleToExecute;
                                 }
-                                ++PC;
+                                ++registers.PC;
                                 break;
                         }
 
@@ -1887,111 +1890,327 @@ void CPU::Cpu::executeCycle() {
 #pragma region JUMP
             // JP nn
             case 0b11000011:
-                PC = bus->read(++PC) << 8 | bus->read(++PC);
+                registers.PC = bus->read(++registers.PC) << 8 | bus->read(++registers.PC);
                 cycleNumber += 3;
                 break;
             // JP NZ nn
             case 0b11000010:
-                helpVariable16 = bus->read(++PC) << 8 | bus->read(++PC);
                 if (!registers.z) {
-                    PC = helpVariable16;
+                    helpVariable16 = registers.PC;
+                    registers.reg_8[PC_LOW] = bus->read(++helpVariable16);
+                    registers.reg_8[PC_HIGH] = bus->read(++helpVariable16);
                     cycleToExecute += 4;
                 } else {
-                    ++PC;
+                    registers.PC += 3;
                     cycleToExecute += 2;
                 }
                 break;
             // JP Z nn
             case 0b11001010:
-                helpVariable16 = bus->read(++PC) << 8 | bus->read(++PC);
                 if (registers.z) {
-                    PC = helpVariable16;
+                    helpVariable16 = registers.PC;
+                    registers.reg_8[PC_LOW] = bus->read(++helpVariable16);
+                    registers.reg_8[PC_HIGH] = bus->read(++helpVariable16);
+                    registers.PC = helpVariable16;
                     cycleToExecute += 4;
                 } else {
-                    ++PC;
+                    registers.PC += 3;
                     cycleToExecute += 2;
                 }
                 break;
             // JP NC nn
             case 0b11010010:
-                helpVariable16 = bus->read(++PC) << 8 | bus->read(++PC);
                 if (!registers.cy) {
-                    PC = helpVariable16;
+                    helpVariable16 = registers.PC;
+                    registers.reg_8[PC_LOW] = bus->read(++helpVariable16);
+                    registers.reg_8[PC_HIGH] = bus->read(++helpVariable16);
+                    registers.PC = helpVariable16;
                     cycleToExecute += 4;
                 } else {
-                    ++PC;
+                    registers.PC += 3;
                     cycleToExecute += 2;
                 }
                 break;
             // JP C nn
             case 0b11011010:
-                helpVariable16 = bus->read(++PC) << 8 | bus->read(++PC);
                 if (registers.cy) {
-                    PC = helpVariable16;
+                    helpVariable16 = registers.PC;
+                    registers.reg_8[PC_LOW] = bus->read(++helpVariable16);
+                    registers.reg_8[PC_HIGH] = bus->read(++helpVariable16);
                     cycleToExecute += 4;
                 } else {
-                    ++PC;
+                    registers.PC += 3;
                     cycleToExecute += 2;
                 }
                 break;
             // JR e
             case 0b00011000:
-                PC += static_cast<int8_t>(bus->read(++PC));
+                registers.PC += static_cast<int8_t>(bus->read(++registers.PC));
                 cycleNumber += 2;
                 break;
             // JR NZ e
             case 0b00100000:
-                helpVariable16 = PC + static_cast<int8_t>(bus->read(++PC));
+                helpVariable16 = registers.PC + static_cast<int8_t>(bus->read(++registers.PC));
                 if (!registers.z) {
-                    PC = helpVariable16;
+                    registers.PC = helpVariable16;
                     cycleToExecute += 2;
                 } else {
-                    ++PC;
+                    ++registers.PC;
                     cycleToExecute += 1;
                 }
                 break;
             // JR Z 3
             case 0b00101000:
-                helpVariable16 = PC + static_cast<int8_t>(bus->read(++PC));
+                helpVariable16 = registers.PC + static_cast<int8_t>(bus->read(++registers.PC));
                 if (registers.z) {
-                    PC = helpVariable16;
+                    registers.PC = helpVariable16;
                     cycleToExecute += 2;
                 } else {
-                    ++PC;
+                    ++registers.PC;
                     cycleToExecute += 1;
                 }
                 break;
             // JR NC e
             case 0b00110000:
-                helpVariable16 = PC + static_cast<int8_t>(bus->read(++PC));
+                helpVariable16 = registers.PC + static_cast<int8_t>(bus->read(++registers.PC));
                 if (!registers.cy) {
-                    PC = helpVariable16;
+                    registers.PC = helpVariable16;
                     cycleToExecute += 2;
                 } else {
-                    ++PC;
+                    ++registers.PC;
                     cycleToExecute += 1;
                 }
                 break;
             // JR C 3
             case 0b00111000:
-                helpVariable16 = PC + static_cast<int8_t>(bus->read(++PC));
+                helpVariable16 = registers.PC + static_cast<int8_t>(bus->read(++registers.PC));
                 if (registers.cy) {
-                    PC = helpVariable16;
+                    registers.PC = helpVariable16;
                     cycleToExecute += 2;
                 } else {
-                    ++PC;
+                    ++registers.PC;
                     cycleToExecute += 1;
                 }
                 break;
             // JP (HL)
             case 0b11101001:
-                PC = registers.HL;
+                registers.PC = registers.HL;
                 break;
 #pragma endregion JUMP
+#pragma region CALL_RETURN
+            // CALL nn
+            case 0b11001101:
+                bus->write(--registers.SP, registers.reg_8[PC_HIGH]);
+                bus->write(--registers.SP, registers.reg_8[PC_LOW]);
+                helpVariable16 = registers.PC;
+                registers.reg_8[PC_LOW] = bus->read(++helpVariable16);
+                registers.reg_8[PC_HIGH] = bus->read(++helpVariable16);
+                cycleToExecute += 5;
+                break;
+            // CALL NZ nn
+            case 0b11000100:
+                if (!registers.z) {
+                    bus->write(--registers.SP, registers.reg_8[PC_HIGH]);
+                    bus->write(--registers.SP, registers.reg_8[PC_LOW]);
+                    helpVariable16 = registers.PC;
+                    registers.reg_8[PC_LOW] = bus->read(++helpVariable16);
+                    registers.reg_8[PC_HIGH] = bus->read(++helpVariable16);
+                    cycleToExecute += 5;
+                } else {
+                    registers.PC += 3;
+                    cycleToExecute += 2;
+                }
+                break;
+            // CALL Z nn
+            case 0b11001100:
+                if (registers.z) {
+                    bus->write(--registers.SP, registers.reg_8[PC_HIGH]);
+                    bus->write(--registers.SP, registers.reg_8[PC_LOW]);
+                    helpVariable16 = registers.PC;
+                    registers.reg_8[PC_LOW] = bus->read(++helpVariable16);
+                    registers.reg_8[PC_HIGH] = bus->read(++helpVariable16);
+                    cycleToExecute += 5;
+                } else {
+                    registers.PC += 3;
+                    cycleToExecute += 2;
+                }
+                break;
+            // CALL NC nn
+            case 0b11010100:
+                if (!registers.cy) {
+                    bus->write(--registers.SP, registers.reg_8[PC_HIGH]);
+                    bus->write(--registers.SP, registers.reg_8[PC_LOW]);
+                    helpVariable16 = registers.PC;
+                    registers.reg_8[PC_LOW] = bus->read(++helpVariable16);
+                    registers.reg_8[PC_HIGH] = bus->read(++helpVariable16);
+                    cycleToExecute += 5;
+                } else {
+                    registers.PC += 3;
+                    cycleToExecute += 2;
+                }
+                break;
+            // CALL C nn
+            case 0b11011100:
+                if (registers.cy) {
+                    bus->write(--registers.SP, registers.reg_8[PC_HIGH]);
+                    bus->write(--registers.SP, registers.reg_8[PC_LOW]);
+                    helpVariable16 = registers.PC;
+                    registers.reg_8[PC_LOW] = bus->read(++helpVariable16);
+                    registers.reg_8[PC_HIGH] = bus->read(++helpVariable16);
+                    cycleToExecute += 5;
+                } else {
+                    registers.PC += 3;
+                    cycleToExecute += 2;
+                }
+                break;
+            // RET
+            case 0b11001001:
+                registers.reg_8[PC_LOW] = bus->read(registers.SP++);
+                registers.reg_8[PC_HIGH] = bus->read(registers.SP++);
+                cycleToExecute += 3;
+                break;
+            // RETI to-do interupt
+            case 0b11011001:
+                registers.reg_8[PC_LOW] = bus->read(registers.SP++);
+                registers.reg_8[PC_HIGH] = bus->read(registers.SP++);
+                cycleToExecute += 3;
+                break;
+            // RET NZ nn
+            case 0b11000000:
+                if (!registers.z) {
+                    registers.reg_8[PC_LOW] = bus->read(registers.SP++);
+                    registers.reg_8[PC_HIGH] = bus->read(registers.SP++);
+                    cycleToExecute += 4;
+                } else {
+                    registers.PC += 3;
+                    cycleToExecute += 2;
+                }
+                break;
+            // RET Z nn
+            case 0b11001000:
+                if (registers.z) {
+                    registers.reg_8[PC_LOW] = bus->read(registers.SP++);
+                    registers.reg_8[PC_HIGH] = bus->read(registers.SP++);
+                    cycleToExecute += 4;
+                } else {
+                    ++registers.PC;
+                    cycleToExecute += 1;
+                }
+                break;
+            // RET NC nn
+            case 0b11010000:
+                if (!registers.cy) {
+                    registers.reg_8[PC_LOW] = bus->read(registers.SP++);
+                    registers.reg_8[PC_HIGH] = bus->read(registers.SP++);
+                    cycleToExecute += 4;
+                } else {
+                    ++registers.PC;
+                    cycleToExecute += 1;
+                }
+                break;
+            // RET C nn
+            case 0b11011000:
+                if (registers.cy) {
+                    registers.reg_8[PC_LOW] = bus->read(registers.SP++);
+                    registers.reg_8[PC_HIGH] = bus->read(registers.SP++);
+                    cycleToExecute += 4;
+                } else {
+                    ++registers.PC;
+                    cycleToExecute += 1;
+                }
+                break;
+            // RST t
+            case 0b11000111:
+            case 0b11001111:
+            case 0b11010111:
+            case 0b11011111:
+            case 0b11100111:
+            case 0b11101111:
+            case 0b11110111:
+            case 0b11111111:
+                bus->write(--registers.SP, registers.reg_8[PC_HIGH]);
+                bus->write(--registers.SP, registers.reg_8[PC_LOW]);
+                registers.reg_8[PC_LOW] = instruction & 0b00111000;
+                registers.reg_8[PC_HIGH] = 0x00;
+                cycleToExecute += 3;
+                break;
+#pragma endregion CALL_RETURN
+#pragma region GENERAL
+            // DAA
+            case 0b00100111:
+                registers.h = false;
+                helpVariable8 = 0;
+                if (registers.n) {
+                    if (!registers.cy && registers.h && registers.reg_8[A] <= 0x80 && registers.reg_8[A] & 0x0F >=
+                        0x06) {
+                        helpVariable8 = 0xFA;
+                        registers.cy = false;
+                    } else if (registers.cy && !registers.h && registers.reg_8[A] >= 0x70 && registers.reg_8[A] & 0x0F
+                               <= 0x09) {
+                        helpVariable8 = 0xA0;
+                        registers.cy = true;
+                    } else if (registers.cy && registers.h && registers.reg_8[A] >= 0x60 && registers.reg_8[A] & 0x0F >=
+                               0x06) {
+                        helpVariable8 = 0x9A;
+                        registers.cy = true;
+                    } else {
+                        registers.cy = false;
+                    }
+                } else {
+                    if (registers.cy || registers.reg_8[A] >= 0xA0) {
+                        helpVariable8 = 0x60;
+                    } else if (!registers.cy && !registers.h && registers.reg_8[A] >= 0x90 && registers.reg_8[A] & 0x0F
+                               >= 0x0A) {
+                        helpVariable8 = 0x60;
+                        registers.cy = true;
+                    }
 
-
+                    if (registers.h || registers.reg_8[A] & 0x0F >= 0x0A) {
+                        helpVariable8 += 0x06;
+                        registers.cy = false;
+                    }
+                }
+                registers.reg_8[A] += helpVariable8;
+                registers.z = registers.reg_8[A] == 0;
+                ++registers.PC;
+                break;
+            //NOP
+            case 0b00000000:
+                ++registers.PC;
+                break;
+            //CCF
+            case 0b00111111:
+                registers.cy = !registers.cy;
+                ++registers.PC;
+                break;
+            //SCF
+            case 0b00110111:
+                registers.cy = true;
+                ++registers.PC;
+                break;
+            //DI
+            case 0b11110011:
+                interruptEnabled = false;
+                ++registers.PC;
+                break;
+            //EI
+            case 0b11111011:
+                interruptEnabled = true;
+                ++registers.PC;
+                break;
+            //HALT
+            case 0b01110110:
+                haltMode = true;
+                ++registers.PC;
+                break;
+            //STOP
+            case 0b00010000:
+                stopMode = true;
+                ++registers.PC;
+                break;
+#pragma endregion GENERAL
             default:
-                std::cout << "Invalid instruction :" << bus->read(PC) << "\n";;
+                std::cout << "Invalid instruction :" << bus->read(registers.PC) << "\n";;
         }
     } else {
         --cycleToExecute;
